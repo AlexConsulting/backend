@@ -655,10 +655,22 @@ app.use("/profile", profileRoutes);
 
 const path = require("path");
 
+// === Redirecionamento para login se não autenticado ===
+app.get('/index.html', (req, res) => {
+  // Verificar se o usuário está autenticado (verificando o cookie ou sessão)
+  if (!req.cookies.user_id) { // Ou qualquer outra lógica de autenticação que você use
+    return res.redirect('/login.html'); // Redireciona para a página de login
+  }
+  // Se estiver autenticado, envia o arquivo index.html
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // === Existing routes (mantidas) ===
 app.get("/", (req,res)=> 
   res.sendFile(path.join(__dirname,"public","login.html"))
 );
+
+// Restante das suas rotas já existentes
 app.get("/analisar", async (req, res) => {
   const db = require("./db/dbmanager");
 
