@@ -16,6 +16,7 @@ function openModal(text) {
   document.getElementById('modalContent').textContent = text;
   document.getElementById('modalBg').style.display = 'flex';
 }
+
 function closeModal() {
   document.getElementById('modalBg').style.display = 'none';
 }
@@ -25,7 +26,7 @@ async function loadUserWelcome() {
   try {
     const user = await apiGet('/auth/session');
     document.getElementById('userWelcome').innerHTML =
-      `Hello, <strong>${user.name}</strong><br><small>`;
+      `Bem-vindo, <strong>${user.name}</strong><br><small>${user.email}</small>`;
   } catch {}
 }
 
@@ -34,7 +35,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const cardPlan = document.getElementById('card-plan');
   const cardQuota = document.getElementById('card-quota');
+  const novaAnaliseBtn = document.getElementById('nova-analise-btn'); // Referência ao botão de Nova Análise
   const tbody = document.querySelector('#tblHistory tbody');
+  const upgradeButton = document.getElementById('upgrade-button');
 
   try {
     const plan = await apiGet('/plans/current');
@@ -43,6 +46,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     cardPlan.textContent = `Plano atual: ${plan.plan_name.toUpperCase()}`;
     cardQuota.textContent = `Quota usada: ${quota.used} / ${quota.limit}`;
+
+    // Verifica se a quota foi excedida
+    if (quota.used >= quota.limit) {
+      cardQuota.style.color = 'red';  // Cor vermelha para quota excedida
+      upgradeButton.style.display = 'inline-block'; // Exibe o botão de upgrade
+      novaAnaliseBtn.disabled = true;  // Desabilita o botão de nova análise
+      novaAnaliseBtn.style.cursor = 'not-allowed';  // Muda o cursor para mostrar que está desabilitado
+      novaAnaliseBtn.title = 'Quota atingida! Faça upgrade do seu plano.';  // Tooltip informando sobre a quota
+      alert('Quota atingida! Faça upgrade do seu plano.');
+      
+      // Previne o redirecionamento quando a quota for atingida
+      novaAnaliseBtn.addEventListener('click', (event) => {
+        event.preventDefault();  // Impede o redirecionamento
+        alert('Você não pode realizar novas análises. Faça upgrade do seu plano.');
+      });
+    }
 
     tbody.innerHTML = '';
     history.forEach(h => {
@@ -71,4 +90,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.href = '/login.html';
   }
 });
-
