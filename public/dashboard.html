@@ -6,16 +6,15 @@
   <title>Dashboard • SOC Analyzer</title>
 
   <style>
-	body {
-	margin: 0;
-	font-family: Inter, system-ui, Arial;
-	background: linear-gradient(180deg, #081023, #061024);
-	color: #dbe6f3;
-	min-height: 100vh;
-	display: flex;
-	overflow-y: auto;
-	}
-
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, Arial;
+      background: linear-gradient(180deg, #081023, #061024);
+      color: #dbe6f3;
+      min-height: 100vh;
+      display: flex;
+      overflow-y: auto;
+    }
 
     /* Saudação */
     .user-welcome {
@@ -174,65 +173,52 @@
       max-height: 80%;
       overflow-y: auto;
     }
-	/* ===== MOBILE GLASS NAVIGATION (bottom) ===== */
-.mobile-nav-glass { display: none; }
 
-@media (max-width: 768px) {
-
-  /* garante espaço para a barra inferior e permite scroll */
-  body {
-    padding-bottom: 84px !important;
-    overflow-y: auto !important;
-  }
-
-  /* esconde a sidebar desktop (se houver) */
-  .sidebar { display: none !important; }
-
-  /* content deve ocupar toda largura */
-  .content {
-    margin-left: 0 !important;
-    width: 100% !important;
-    padding: 18px !important;
-  }
-
-  /* o nav glass em si */
-  .mobile-nav-glass {
-    display: flex;
-    position: fixed;
-    bottom: 10px; /* sobe um pouco para ficar com margem */
-    left: 8px;
-    right: 8px;
-    height: 56px;
-    justify-content: space-around;
-    align-items: center;
-    padding: 6px 12px;
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(12px);
-    border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
-    z-index: 9999;
-    border: 1px solid rgba(255,255,255,0.06);
-  }
-
-  .mobile-nav-glass button {
-    background: none;
-    border: none;
-    color: #dbe6f3;
-    font-size: 22px;
-    padding: 8px 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .mobile-nav-glass button.active,
-  .mobile-nav-glass button:hover {
-    transform: translateY(-3px);
-    color: #4da3ff;
-  }
-}
+    /* Botão de Upgrade visível quando a quota for excedida */
+    #upgrade-button {
+      display: none;
+      background-color: red;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
 	
+    /* ===== MOBILE GLASS NAVIGATION (bottom) ===== */
+    .mobile-nav-glass { display: none; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none !important; }
+      .content { width: 100% !important; padding: 18px !important; }
+      .mobile-nav-glass { display: flex; position: fixed; bottom: 10px; left: 8px; right: 8px; height: 56px; justify-content: space-around; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.45); z-index: 9999; border: 1px solid rgba(255,255,255,0.06); }
+      .mobile-nav-glass button { background: none; border: none; color: #dbe6f3; font-size: 22px; padding: 8px 12px; cursor: pointer; }
+    }
+	
+	/* Centraliza o botão de Upgrade */
+.upgrade-button-container {
+  display: flex;
+  justify-content: center;  /* Centraliza o botão horizontalmente */
+  margin-top: 20px;
+}
+
+#upgrade-button {
+  background-color: red; /* Destaque com cor forte */
+  color: white;
+  padding: 12px 30px;  /* Aumenta o tamanho do botão para chamar mais atenção */
+  border-radius: 10px;
+  font-size: 1.2rem;  /* Tamanho maior para o texto */
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#upgrade-button:hover {
+  background-color: #ff3333;  /* Alteração da cor no hover para um vermelho mais intenso */
+  transform: translateY(-2px);  /* Efeito visual de elevação ao passar o mouse */
+}
+
   </style>
 </head>
 
@@ -269,30 +255,35 @@
       Dashboard
     </h1>
 
-    <div class="analysis-button-container">
-      <a href="/index.html" class="big-action-button">🔍 Nova Análise</a>
-    </div>
+<!-- Botão de Nova Análise -->
+<div class="analysis-button-container">
+  <a id="nova-analise-btn" class="big-action-button">🔍 Nova Análise</a>
+</div>
 
-    <div class="cards">
-      <div class="card" id="card-plan">Plano atual: ...</div>
-      <div class="card" id="card-quota">Uso da quota: ...</div>
-    </div>
+<div class="cards">
+  <div class="card" id="card-plan">Plano atual: ...</div>
+  <div class="card" id="card-quota">Uso da quota: ...</div>
+</div>
 
-    <h2 style="margin-top:30px;color:#9aa4b2">Últimas consultas</h2>
+<!-- Botão de Upgrade - Centralizado -->
+<div class="upgrade-button-container">
+  <button id="upgrade-button" onclick="window.location.href='/plans.html'">Upgrade</button>
+</div>
 
-    <table id="tblHistory">
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Consulta</th>
-          <th>Tipo</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+<h2 style="margin-top:30px;color:#9aa4b2">Últimas consultas</h2>
 
-  </div>
+<table id="tblHistory">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Consulta</th>
+      <th>Tipo</th>
+      <th>Ação</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
 
   <div class="modal-bg" id="modalBg">
     <div class="modal">
@@ -312,7 +303,6 @@
   <button title="Perfil" onclick="location.href='profile.html'">👤</button>
   <button title="Sair" onclick="location.href='/auth/logout'">🚪</button>
 </div>
-
 
 </body>
 </html>
