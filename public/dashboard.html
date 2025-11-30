@@ -174,16 +174,12 @@
       overflow-y: auto;
     }
 
-    /* Botão de Upgrade visível quando a quota for excedida */
-    #upgrade-button {
-      display: none;
-      background-color: red;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 20px;
-    }
+   /* Botão de Upgrade visível quando a quota for excedida */
+   /* Oculta permanentemente o botão de Upgrade */
+	#upgrade-button {
+	display: none; /* Este comando vai ocultar o botão de upgrade */
+	}
+
 	
     /* ===== MOBILE GLASS NAVIGATION (bottom) ===== */
     .mobile-nav-glass { display: none; }
@@ -277,7 +273,7 @@
     <tr>
       <th>Data</th>
       <th>Consulta</th>
-      <th>Tipo</th>
+      
       <th>Ação</th>
     </tr>
   </thead>
