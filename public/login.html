@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login • SOC Analyzer</title>
+  <style>
+    body{font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#081023,#061024);color:#dbe6f3;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:28px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.6);width:420px;text-align:center}
+    h2{margin-top:0;color:#9aa4b2;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:600}
+    input{width:100%;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-top:12px;font-size:15px}
+    button{margin-top:18px;width:100%;padding:12px;border-radius:8px;border:none;background:linear-gradient(90deg,#00aaff,#0088cc);color:#041226;font-weight:700;cursor:pointer;font-size:15px}
+    .link{margin-top:14px;font-size:14px;color:#9aa4b2}
+    a{color:#4da3ff;text-decoration:none}
+    a:hover{text-decoration:underline}
+	@media (max-width: 768px) {
+    body {
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    /* Ajuste para que o formulário ocupe a largura da tela no mobile */
+    .form-container {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 10px;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Botões e inputs para facilitar no mobile */
+    input, button {
+        width: 100%;
+        padding: 14px;
+        margin: 8px 0;
+        font-size: 16px;
+    }
+
+    button {
+        background: linear-gradient(90deg, #00aaff, #0088cc);
+        color: white;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: linear-gradient(90deg, #00b2ff, #1591ff);
+    }
+
+    .mobile-nav-glass {
+        display: flex;
+        position: fixed;
+        bottom: 10px;
+        left: 12px;
+        right: 12px;
+        height: 60px;
+        justify-content: space-around;
+        align-items: center;
+        padding: 6px 14px;
+        background: rgba(255,255,255,0.07);
+        backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 10px 35px rgba(0,0,0,0.35);
+        z-index: 9999;
+    }
+
+    .mobile-nav-glass button {
+        background: none;
+        border: none;
+        color: #dbe6f3;
+        font-size: 26px;
+        cursor: pointer;
+        transition: 0.15s;
+    }
+
+    .mobile-nav-glass button:hover {
+        transform: translateY(-4px);
+        color: #4da3ff;
+    }
+}
+
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4da3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      Login
+    </h2>
+
+    <input id="email" type="email" placeholder="E-mail" />
+    <input id="password" type="password" placeholder="Senha" />
+
+    <button id="btnLogin">Entrar</button>
+
+    <div class="link">Não tem conta? <a href="register.html">Criar conta</a></div>
+    <div class="link"><a href="forgot.html">Esqueci minha senha</a></div>
+
+    <div id="out" style="margin-top:12px"></div>
+  </div>
+
+  <script src="js/login.js"></script>
+</body>
+</html>
