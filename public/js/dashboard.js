@@ -25,7 +25,7 @@ async function loadUserWelcome() {
   try {
     const user = await apiGet('/auth/session');
     document.getElementById('userWelcome').innerHTML =
-      `Bem-vindo, <strong>${user.name}</strong><br><small>`;
+      `Hello, <strong>${user.name}</strong><br><small>`;
   } catch {}
 }
 
@@ -71,3 +71,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.href = '/login.html';
   }
 });
+
