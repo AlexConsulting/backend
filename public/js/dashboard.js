@@ -26,7 +26,7 @@ async function loadUserWelcome() {
   try {
     const user = await apiGet('/auth/session');
     document.getElementById('userWelcome').innerHTML =
-      `Hello, <strong>${user.name}</strong><br><small>${user.email}</small>`;
+      `Hello, <strong>${user.name}</strong><br><small>`;
   } catch {}
 }
 
