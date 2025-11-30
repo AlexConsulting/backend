@@ -1,7 +1,8 @@
-
+// by Alex Silva - 2025
 // server.js - Updated: separates AI payload and Technical Summary, IA always called.
-// Keys kept as in your current code (do not change unless you want to).
+// Keys by env
 
+require('dotenv').config();
 
 const express = require("express");
 const cors = require("cors");
@@ -11,8 +12,9 @@ const { URL } = require("url");
 
 // === NEW: Cookie parser (necessário para login) ===
 const cookieParser = require("cookie-parser");
-const COOKIE_SECRET = "ALTERE_ESTE_SEGREDO_123456789";
 
+// Lê o COOKIE_SECRET do arquivo .env
+const COOKIE_SECRET = process.env.COOKIE_SECRET;
 
 const app = express();
 app.use(express.json());
@@ -22,13 +24,14 @@ app.use(cookieParser(COOKIE_SECRET));
 
 
 // ---------------- CONFIG (kept as in your project - DO NOT CHANGE unless you want to) ----------------
-const VT_KEY = "102a8c19f67898e3db47e90fee49c0ee0a315a8264d3c70099b7be84e9419aa0";
-const ABUSEIPDB_KEY = "e466cbefa6796a501c6b68ced351b0951d870cf1a76dfedac8a4b735ca144f051da944f10bf739df";
-const OTX_KEY = "9e13d9f198fffb5f1ea121a1f80a061ab51d79495af422af270a95e083a7426b";
-const URLSCAN_KEY = "019abdb4-581e-74a8-b2c4-facff93a5087";
-const GOOGLE_SAFE_KEY = "AIzaSyBQb0UOodglRRLRpUWb6V-Ucf12bbWKWyU";
-const SHODAN_KEY = "wLA1or83JWGmeHODxRgizGftKE3hFMwV";
-const GEMINI_API_KEY = "AIzaSyC06sD30vpLh9pY_3AZ4rQc_5gsrdkea6k";
+// Lê as chaves de API do arquivo .env
+const VT_KEY = process.env.VT_KEY;
+const ABUSEIPDB_KEY = process.env.ABUSEIPDB_KEY;
+const OTX_KEY = process.env.OTX_KEY;
+const URLSCAN_KEY = process.env.URLSCAN_KEY;
+const GOOGLE_SAFE_KEY = process.env.GOOGLE_SAFE_KEY;
+const SHODAN_KEY = process.env.SHODAN_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 // ---------------------------------------------------------------------------------
 
 // Rate limiter
@@ -45,6 +48,12 @@ const GEMINI_API_KEY = "AIzaSyC06sD30vpLh9pY_3AZ4rQc_5gsrdkea6k";
 const cache = new Map();
 
 function cacheSet(key, value, ttlSeconds) {
+  // Só armazene se o valor não for um erro
+  if (value && value.error) {
+    console.log(`🚫 Não armazenando erro no cache: ${key}`);
+    return;
+  }
+
   cache.set(key, { value, expiresAt: Date.now() + ttlSeconds * 1000 });
   console.log(`🟦 CACHE SET: ${key} (TTL ${ttlSeconds}s)`);
 }
@@ -93,6 +102,7 @@ async function fetchTimeout(resource, options = {}, timeout = 10000) {
     throw err;
   }
 }
+
 
 
 // ---------------- External queries (collect raw/technical_summary) ----------------
@@ -354,6 +364,7 @@ function normalizeVT(vt) {
     return 90 + Math.min(10, (mal - 5) * 2);
   } catch(e){ return 0; }
 }
+
 function normalizeWebRisk(google) {
   try {
     if (!google || google.error) return 0;
@@ -362,24 +373,26 @@ function normalizeWebRisk(google) {
     let score = 0;
     for (const m of matches) {
       const t = (m.threatType || "").toUpperCase();
-      if (t.includes("MALWARE")) score = Math.max(score,95);
-      else if (t.includes("SOCIAL_ENGINEERING") || t.includes("PHISH")) score = Math.max(score,70);
-      else score = Math.max(score,40);
+      if (t.includes("MALWARE")) score = Math.max(score,95);  // Prioriza malware
+      else if (t.includes("SOCIAL_ENGINEERING") || t.includes("PHISH")) score = Math.max(score,90);  // Prioriza phishing
+      else score = Math.max(score,40);  // Outros tipos de ameaça têm menor impacto
     }
     return score;
   } catch(e){ return 0; }
 }
+
 function normalizeUrlscan(urlscan) {
   try {
     if (!urlscan || urlscan.error) return 0;
     const v = urlscan.minimal?.verdicts?.overall || urlscan.verdicts?.overall;
-    if (v && (v.malicious || v.score > 80)) return 90;
+    if (v && (v.malicious || v.score > 80)) return 90;  // Major risk for malicious URLs
     const page = (urlscan.minimal && urlscan.minimal.page) || urlscan.page || {};
-    if (page.redirected && page.redirected !== "no") return 50;
-    if ((page.domainAgeDays || 99999) < 30) return 20;
+    if (page.redirected && page.redirected !== "no") return 50;  // Risco médio se houver redirecionamento
+    if ((page.domainAgeDays || 99999) < 30) return 20;  // Sites novos têm menor confiança
     return 0;
   } catch(e){ return 0; }
 }
+
 function normalizeAbuse(abuse) {
   try {
     const s = abuse?.data?.data?.abuseConfidenceScore || 0;
@@ -387,28 +400,40 @@ function normalizeAbuse(abuse) {
     if (s <= 40) return 20;
     if (s <= 70) return 50;
     if (s <= 90) return 75;
-    return 90;
+    return 90;  // Score muito alto para confiança de abuso
   } catch(e){ return 0; }
 }
+
 function normalizeOTX(otx) {
   try {
     const pulses = otx?.pulse_info?.count || otx?.data?.pulse_info?.count || 0;
     if (pulses === 0) return 0;
     if (pulses === 1) return 40;
     if (pulses <= 3) return 60;
-    return 80;
+    return 80;  // Melhorar pontuação se houver mais de 3 pulsos
   } catch(e){ return 0; }
 }
+
 function normalizeShodan(shodan) {
   try {
     const ports = shodan?.data?.ports || [];
     if (!ports || !ports.length) return 0;
     const critical = ports.filter(p => [3389,5900,23,445].includes(p)).length;
-    return Math.min(80, (ports.length * 5) + (critical * 10));
+    return Math.min(80, (ports.length * 5) + (critical * 15));  // Ajuste para portas críticas
   } catch(e){ return 0; }
 }
 
-const WEIGHTS = { vt:0.5, urlscan:0.2, abuse:0.15, webrisk:0.1, otx:0.05, shodan:0.05 };
+// ---------------- Adjusted WEIGHTS for Dynamic Impact ----------------
+const WEIGHTS = { 
+  vt: 0.7,   // Aumentando o peso do VT para 70%
+  urlscan: 0.15,  // Menor peso para o Urlscan
+  abuse: 0.1,     // Peso reduzido para AbuseIPDB
+  webrisk: 0.05,   // Peso reduzido para WebRisk
+  otx: 0.05,      // Peso reduzido para OTX
+  shodan: 0.05     // Peso reduzido para Shodan
+};
+
+// ---------------- Compute Score ----------------
 function computeScoreOptimized(evidence, type='url') {
   const reasons = [];
   const vtScore = normalizeVT(evidence.vt);
@@ -417,39 +442,37 @@ function computeScoreOptimized(evidence, type='url') {
   const abuseScore = normalizeAbuse(evidence.abuse);
   const otxScore = normalizeOTX(evidence.otx);
   const shodanScore = normalizeShodan(evidence.shodan);
-  if (vtScore>0) reasons.push(`VT ${vtScore}`);
-  if (webriskScore>0) reasons.push(`WebRisk ${webriskScore}`);
-  if (urlscanScore>0) reasons.push(`urlscan ${urlscanScore}`);
-  if (abuseScore>0) reasons.push(`AbuseIPDB ${abuseScore}`);
-  if (otxScore>0) reasons.push(`OTX ${otxScore}`);
-  if (shodanScore>0) reasons.push(`Shodan ${shodanScore}`);
+
+  if (vtScore > 0) reasons.push(`VT ${vtScore}`);
+  if (webriskScore > 0) reasons.push(`WebRisk ${webriskScore}`);
+  if (urlscanScore > 0) reasons.push(`urlscan ${urlscanScore}`);
+  if (abuseScore > 0) reasons.push(`AbuseIPDB ${abuseScore}`);
+  if (otxScore > 0) reasons.push(`OTX ${otxScore}`);
+  if (shodanScore > 0) reasons.push(`Shodan ${shodanScore}`);
 
   let final = 0;
-  final += (vtScore||0)*WEIGHTS.vt;
-  final += (urlscanScore||0)*WEIGHTS.urlscan;
-  final += (abuseScore||0)*WEIGHTS.abuse;
-  final += (webriskScore||0)*WEIGHTS.webrisk;
-  final += (otxScore||0)*WEIGHTS.otx;
-  if (type==='ip' || (evidence.urlscan && evidence.urlscan.minimal && evidence.urlscan.minimal.page && evidence.urlscan.minimal.page.ip)) {
-    final += (shodanScore||0)*WEIGHTS.shodan;
+  
+  // Adicionando peso maior para VirusTotal se estiver indicando risco
+  final += (vtScore || 0) * WEIGHTS.vt;
+  final += (urlscanScore || 0) * WEIGHTS.urlscan;
+  final += (abuseScore || 0) * WEIGHTS.abuse;
+  final += (webriskScore || 0) * WEIGHTS.webrisk;
+  final += (otxScore || 0) * WEIGHTS.otx;
+  if (type === 'ip' || (evidence.urlscan && evidence.urlscan.minimal && evidence.urlscan.minimal.page && evidence.urlscan.minimal.page.ip)) {
+    final += (shodanScore || 0) * WEIGHTS.shodan;
   }
+
+  // Ajuste para discrepâncias: aumenta o score se VirusTotal indicar risco
+  if (vtScore >= 60 && !reasons.some(r => r.includes("WebRisk") || r.includes("urlscan"))) {
+    final += 10;  // Aumenta a pontuação se VT indicar risco alto e outras fontes não reportarem risco
+    reasons.push("Ajuste devido ao alto risco no VirusTotal (6 motores maliciosos)");
+  }
+
   final = Math.round(Math.max(0, Math.min(100, final)));
 
-  if (evidence.google && (evidence.google.matches && evidence.google.matches.some(m=> (m.threatType||'').toUpperCase().includes('MALWARE')))) {
-    return { score:95, classification:'HIGH', reasons:['WebRisk: MALWARE'] };
-  }
+  // Classificação final
+  const finalClass = final >= 80 ? 'HIGH' : final >= 50 ? 'MEDIUM' : 'LOW';
 
-  const reputables = ['kaspersky','bitdefender','microsoft','trendmicro','eset','symantec','mcafee'];
-  if (evidence.vt && ((evidence.vt.analysis && evidence.vt.analysis.data) || (evidence.vt.url_obj && evidence.vt.url_obj.data))) {
-    // find reputable engines in analysis or url_obj
-    const res = evidence.vt.analysis?.data?.attributes?.results || evidence.vt.url_obj?.data?.attributes?.last_analysis_results || {};
-    const found = Object.keys(res).find(k => reputables.some(r => k.toLowerCase().includes(r)));
-    if (found && final<90) { reasons.push('VT reputable engine flagged'); final = Math.min(100, final+15); }
-  }
-  if (evidence.abuse && evidence.abuse.data && evidence.abuse.data.data && evidence.abuse.data.data.abuseConfidenceScore >=95 && final<90) {
-    reasons.push('AbuseIPDB very high'); final = Math.min(100, final+10);
-  }
-  const finalClass = final>=80 ? 'HIGH' : final>=50 ? 'MEDIUM' : 'LOW';
   return { score: final, classification: finalClass, reasons };
 }
 
@@ -462,7 +485,7 @@ function buildAiPayload(evidence) {
       suspicious: evidence.vt.analysis?.data?.attributes?.stats?.suspicious || evidence.vt.url_obj?.data?.attributes?.last_analysis_stats?.suspicious || 0,
       malicious_engines: (() => {
         const res = evidence.vt.analysis?.data?.attributes?.results || evidence.vt.url_obj?.data?.attributes?.last_analysis_results || {};
-        return Object.entries(res).filter(([,v]) => (v.result||v.category||'').toLowerCase().includes('malicious') || (v.result||'').toLowerCase().includes('suspicious')).map(([k,v])=>({engine:k,result:v.result||v.category}));
+        return Object.entries(res).filter(([, v]) => (v.result || v.category || '').toLowerCase().includes('malicious') || (v.result || '').toLowerCase().includes('suspicious')).map(([k, v]) => ({ engine: k, result: v.result || v.category }));
       })()
     },
     urlscan: {
@@ -477,95 +500,140 @@ function buildAiPayload(evidence) {
   };
 }
 
+// Função para validar a resposta da IA (Google Gemini)
+function validateAiResponse(response) {
+  if (!response || !response.text) {
+    console.log("🚫 Resposta inválida ou vazia da IA");
+    return { error: true, reason: "Resposta inválida da IA" };
+  }
+  return { data: response.text };
+}
+
+// Função otimizada para chamar a IA (Google Gemini)
 async function geminiAnalyze(aiPayload) {
-  // IA is mandatory; use cache to reduce repeated costs
   const cacheKey = `ia:${aiPayload.vt.malicious}:${aiPayload.urlscan.ip || aiPayload.urlscan.status || ''}`;
+  
+  // Verificar cache primeiro
   const cached = cacheGet(cacheKey);
-  if (cached) return cached;
-  if (!GEMINI_API_KEY) return { error:true, reason:"no gemini key" };
+  if (cached) {
+    console.log(`⚡ CACHE HIT para IA: ${cacheKey}`);
+    return cached;
+  }
+
+  if (!GEMINI_API_KEY) {
+    console.log("❌ Falha: API Key do Gemini não encontrada");
+    return { error: true, reason: "no gemini key" };
+  }
+
   try {
+    console.log("🔄 Chamando a IA (Gemini)...");
+
     const ai = new (require("@google/genai").GoogleGenAI)({ apiKey: GEMINI_API_KEY });
     const prompt = `Analise o IOC abaixo e produza um resumo técnico objetivo (3-5 frases) em pt-BR. Dê também recomendações curtas.\n\n${JSON.stringify(aiPayload, null, 2)}`;
 
+    // Requisição à IA
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       config: { temperature: 0.1 }
     });
 
-    const out = { data: (response.text || response.output || response) };
-    cacheSet(cacheKey,out,TTL.ia);
-    return out;
-  } catch(e){ return { error:true, reason:"gemini error", detail:e.message }; }
+    // Validar resposta
+    const validResponse = validateAiResponse(response);
+    if (validResponse.error) {
+      console.log("🚫 Erro na resposta da IA");
+      return validResponse;
+    }
+
+    // Armazenar no cache com TTL
+    cacheSet(cacheKey, validResponse, TTL.ia);
+    console.log("✅ Resposta da IA processada com sucesso");
+    return validResponse;
+
+  } catch (e) {
+    console.error("❌ Erro ao chamar Gemini:", e);
+    return { error: true, reason: "gemini error", detail: e.message };
+  }
+}
+
+
+// Helper function to get IP from DNS
+function getIpFromDns(dns) {
+  return (dns && Array.isArray(dns.A) && dns.A[0]) || null;
+}
+
+// Helper function to safely call async functions
+async function safeAsyncCall(fn) {
+  try {
+    return await fn();
+  } catch (e) {
+    return { error: true, detail: e.message };
+  }
 }
 
 // ---------------- Analyze item ----------------
 async function analyzeItem(type, value) {
   const summary = { vt:null, urlscan:null, abuse:null, otx:null, google:null, shodan:null, dns:null, geo:null };
-  // determine hostname
+  
   let hostname = null;
-  if (type==='url') {
-    try { hostname = (new URL(value)).hostname; } catch(e) { try { hostname = (new URL('http://'+value)).hostname } catch(e) { hostname = null; } }
-  } else if (type==='domain' || type==='dominio') hostname = value;
+  if (type === 'url') {
+    try { hostname = (new URL(value)).hostname; } catch(e) { try { hostname = (new URL('http://' + value)).hostname; } catch(e) { hostname = null; } }
+  } else if (type === 'domain' || type === 'dominio') hostname = value;
 
   // DNS + geo
   if (hostname) {
-    summary.dns = await dnsInfo(hostname).catch(e=>({error:e.message}));
+    summary.dns = await dnsInfo(hostname).catch(e => ({ error: e.message }));
   }
 
-  // VT
-  try {
-    if (type==='url') summary.vt = await vtAnalyzeUrl(value);
-    else if (type==='ip') summary.vt = await vtLookupIp(value);
-    else if (type==='hash') summary.vt = await vtLookupHash(value);
-    else if (type==='domain' || type==='dominio') summary.vt = await vtLookupDomain(value);
-  } catch(e){ summary.vt = { error:true, detail:e.message }; }
+  // Execute all requests in parallel
+  const [vtResponse, abuseResponse, urlscanResponse, googleResponse, shodanResponse, geoResponse] = await Promise.all([
+    safeAsyncCall(() => {
+      if (type === 'url') return vtAnalyzeUrl(value);
+      else if (type === 'ip') return vtLookupIp(value);
+      else if (type === 'hash') return vtLookupHash(value);
+      else if (type === 'domain' || type === 'dominio') return vtLookupDomain(value);
+    }),
+    safeAsyncCall(() => (type === 'ip' ? abuseIpLookup(value) : null)),
+    safeAsyncCall(() => (type === 'url' ? urlscanScan(value) : null)),
+    safeAsyncCall(() => (type === 'url' ? googleSafeLookup(value) : null)),
+    safeAsyncCall(() => {
+      const ipToCheck = (type === 'ip') ? value : getIpFromDns(summary.dns);
+      return ipToCheck ? shodanHost(ipToCheck) : null;
+    }),
+    safeAsyncCall(() => {
+      const geoIpAddr = (type === 'ip') ? value : getIpFromDns(summary.dns);
+      return geoIpAddr ? geoIp(geoIpAddr) : null;
+    })
+  ]);
 
-  // Abuse (if ip)
-  try {
-    const ipToCheck = (type==='ip') ? value : (summary.dns && Array.isArray(summary.dns.A) && summary.dns.A[0] ? summary.dns.A[0] : null);
-    if (ipToCheck) summary.abuse = await abuseIpLookup(ipToCheck);
-  } catch(e){ summary.abuse = { error:true, detail:e.message }; }
-
-  // OTX (domain)
-  try { if (hostname) summary.otx = await otxDomain(hostname); } catch(e){ summary.otx = { error:true, detail:e.message }; }
-
-  // urlscan
-  try { if (type==='url') summary.urlscan = await urlscanScan(value); } catch(e){ summary.urlscan = { error:true, detail:e.message }; }
-
-  // Google Safe
-  try { if (type==='url') summary.google = await googleSafeLookup(value); } catch(e){ summary.google = { error:true, detail:e.message }; }
-
-  // Shodan
-  try {
-    const ipToCheck = (type==='ip') ? value : (summary.dns && Array.isArray(summary.dns.A) && summary.dns.A[0] ? summary.dns.A[0] : null);
-    if (ipToCheck) summary.shodan = await shodanHost(ipToCheck);
-  } catch(e){ summary.shodan = { error:true, detail:e.message }; }
-
-  // geo (if ip available)
-  try {
-    const geoIpAddr = (type==='ip') ? value : (summary.dns && Array.isArray(summary.dns.A) && summary.dns.A[0] ? summary.dns.A[0] : null);
-    if (geoIpAddr) summary.geo = await geoIp(geoIpAddr);
-  } catch(e){ summary.geo = { error:true, detail:e.message }; }
+  // Fill in the summary
+  summary.vt = vtResponse;
+  summary.abuse = abuseResponse;
+  summary.urlscan = urlscanResponse;
+  summary.google = googleResponse;
+  summary.shodan = shodanResponse;
+  summary.geo = geoResponse;
 
   // Compute score
   const score = computeScoreOptimized(summary, type);
 
-  // build aiPayload (optimized)
+  // Build AI payload (optimized)
   const aiPayload = buildAiPayload(summary);
 
-  // call IA (mandatory) with optimized payload
+  // Call IA (mandatory) with optimized payload
   const ia = await geminiAnalyze(aiPayload);
 
-  // build final output: include ai_summary (ai), score, and technical_summary (all tools and their raw/condensed responses)
+  // Build final output
   const final = {
     success: true,
     timestamp: new Date().toISOString(),
-    type, query: value,
+    type,
+    query: value,
     score,
     ai_summary: ia,
     technical_summary: summary
   };
+
   return final;
 }
 
