@@ -50,7 +50,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Verifica se a quota foi excedida
     if (quota.used >= quota.limit) {
       cardQuota.style.color = 'red';  // Cor vermelha para quota excedida
-      upgradeButton.style.display = 'inline-block'; // Exibe o botão de upgrade
       novaAnaliseBtn.disabled = true;  // Desabilita o botão de nova análise
       novaAnaliseBtn.style.cursor = 'not-allowed';  // Muda o cursor para mostrar que está desabilitado
       novaAnaliseBtn.title = 'Quota atingida! Faça upgrade do seu plano.';  // Tooltip informando sobre a quota
@@ -76,7 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       tr.innerHTML = `
         <td>${date}</td>
         <td>${h.query}</td>
-        <td>${h.type}</td>
+        
         <td><button data-id="${h.id}" class="btnDetails">Detalhes</button></td>
       `;
       tbody.appendChild(tr);
