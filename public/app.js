@@ -50,44 +50,57 @@
       el.disabled = !yes;
     }
 
-    // Render risk donut chart
-    function renderScoreChart(score) {
-      if (!scoreCanvas) return;
-      const ctx = scoreCanvas.getContext("2d");
-      const normalizedScore = Math.max(0, Math.min(100, Number(score) || 0));
-      const remain = 100 - normalizedScore;
-      const color = normalizedScore >= 70 ? "#e74c3c" : normalizedScore >= 40 ? "#f39c12" : "#2ecc71";
+ // Render risk donut chart
+function renderScoreChart(score) {
+  if (!scoreCanvas) return;
+  const ctx = scoreCanvas.getContext("2d");
+  const normalizedScore = Math.max(0, Math.min(100, Number(score) || 0));
+  const remain = 100 - normalizedScore;
 
-      // Destroy previous
-      if (scoreChartInstance && typeof scoreChartInstance.destroy === "function") {
-        try { scoreChartInstance.destroy(); } catch (e) { /* ignore */ }
-        scoreChartInstance = null;
-      }
+  // Ajustando as cores conforme os novos critérios
+  const color = normalizedScore >= 80 ? "#e74c3c"  // Vermelho para ALTO risco
+               : normalizedScore >= 40 ? "#f39c12"  // Amarelo para MÉDIO risco
+               : "#2ecc71";                      // Verde para BAIXO risco
 
-      // create new
-      try {
-        scoreChartInstance = new Chart(ctx, {
-          type: "doughnut",
-          data: {
-            labels: ["Risco", "Restante"],
-            datasets: [{
-              data: [normalizedScore, remain],
-              backgroundColor: [color, "#e0e0e0"],
-              hoverOffset: 4
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: "70%",
-            plugins: { legend: { display: false } }
-          }
-        });
-      } catch (err) {
-        // Chart may not be available; ignore silently
-        console.warn("Chart render failed:", err && err.message);
-      }
+  // Destroy previous
+  if (scoreChartInstance && typeof scoreChartInstance.destroy === "function") {
+    try { 
+      scoreChartInstance.destroy(); 
+    } catch (e) { 
+      /* ignore */ 
     }
+    scoreChartInstance = null;
+  }
+
+  // Create new chart
+  try {
+    scoreChartInstance = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: ["Risco", "Restante"],
+        datasets: [{
+          data: [normalizedScore, remain],
+          backgroundColor: [color, "#e0e0e0"],  // cor ajustada para o risco
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "70%",
+        plugins: { 
+          legend: { 
+            display: false 
+          }
+        }
+      }
+    });
+  } catch (err) {
+    // Chart may not be available; ignore silently
+    console.warn("Chart render failed:", err && err.message);
+  }
+}
+
 
     // Compact line generator for technical summary
     function compactLine(name, obj) {
