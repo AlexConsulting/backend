@@ -26,7 +26,7 @@ async function loadUserWelcome() {
   try {
     const user = await apiGet('/auth/session');
     document.getElementById('userWelcome').innerHTML =
-      `Hello, <strong>${user.name}</strong><br><small>`;
+      `Hello, <strong>${user.name}</strong><br><small>${user.email}</small>`;
   } catch {}
 }
 
@@ -55,11 +55,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       novaAnaliseBtn.style.cursor = 'not-allowed';  // Muda o cursor para mostrar que está desabilitado
       novaAnaliseBtn.title = 'Quota atingida! Faça upgrade do seu plano.';  // Tooltip informando sobre a quota
       alert('Quota atingida! Faça upgrade do seu plano.');
-      
+
       // Previne o redirecionamento quando a quota for atingida
       novaAnaliseBtn.addEventListener('click', (event) => {
         event.preventDefault();  // Impede o redirecionamento
-        alert('Você não pode realizar novas análises. Faça upgrade do seu plano.');
+        window.location.href = '/plans.html';  // Redireciona para a página de planos
+      });
+    } else {
+      // Se a quota não foi atingida, o botão deve redirecionar para a página de análise
+      novaAnaliseBtn.addEventListener('click', () => {
+        window.location.href = '/index.html'; // Redireciona para a página de nova análise
       });
     }
 
@@ -90,4 +95,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.href = '/login.html';
   }
 });
-
