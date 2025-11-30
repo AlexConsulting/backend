@@ -2,7 +2,6 @@
 // SQLite manager for SOC Analyzer SaaS
 // Handles: users, plans, history, quota, password reset tokens
 
-// db/dbmanager.js
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
