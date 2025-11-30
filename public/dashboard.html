@@ -221,6 +221,7 @@
 
   </style>
 </head>
+
 <body>
 
   <!-- SIDEBAR -->
@@ -238,8 +239,7 @@
     <div class="nav-item" onclick="location.href='history.html'">Histórico</div>
     <div class="nav-item" onclick="location.href='plans.html'">Planos</div>
     <div class="nav-item" onclick="location.href='profile.html'">Perfil</div>
-    <!-- Alterei o onclick para um ID único no botão Sair -->
-    <div class="nav-item" id="logoutButton">Sair</div> <!-- Para Desktop -->
+    <div class="nav-item" onclick="logout()">Sair</div>
   </div>
 
   <!-- CONTEÚDO -->
@@ -255,53 +255,54 @@
       Dashboard
     </h1>
 
-    <!-- Botão de Nova Análise -->
-    <div class="analysis-button-container">
-      <a id="nova-analise-btn" class="big-action-button">🔍 Nova Análise</a>
+<!-- Botão de Nova Análise -->
+<div class="analysis-button-container">
+  <a id="nova-analise-btn" class="big-action-button">🔍 Nova Análise</a>
+</div>
+
+<div class="cards">
+  <div class="card" id="card-plan">Plano atual: ...</div>
+  <div class="card" id="card-quota">Uso da quota: ...</div>
+</div>
+
+<!-- Botão de Upgrade - Centralizado -->
+<div class="upgrade-button-container">
+  <button id="upgrade-button" onclick="window.location.href='/plans.html'">Upgrade</button>
+</div>
+
+<h2 style="margin-top:30px;color:#9aa4b2">Últimas consultas</h2>
+
+<table id="tblHistory">
+  <thead>
+    <tr>
+      <th>Data</th>
+      <th>Consulta</th>
+      <th>Tipo</th>
+      <th>Ação</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+
+  <div class="modal-bg" id="modalBg">
+    <div class="modal">
+      <h3 style="margin-top:0;color:#9aa4b2">Detalhes da Consulta</h3>
+      <pre id="modalContent" style="white-space:pre-wrap"></pre>
+      <button onclick="closeModal()" style="margin-top:12px">Fechar</button>
     </div>
-
-    <div class="cards">
-      <div class="card" id="card-plan">Plano atual: ...</div>
-      <div class="card" id="card-quota">Uso da quota: ...</div>
-    </div>
-    
-    <h2 style="margin-top:30px;color:#9aa4b2">Últimas consultas</h2>
-
-    <table id="tblHistory">
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Consulta</th>
-          <th>Tipo</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-    <div class="modal-bg" id="modalBg">
-      <div class="modal">
-        <h3 style="margin-top:0;color:#9aa4b2">Detalhes da Consulta</h3>
-        <pre id="modalContent" style="white-space:pre-wrap"></pre>
-        <button onclick="closeModal()" style="margin-top:12px">Fechar</button>
-      </div>
-    </div>
-
-    <script src="js/dashboard.js"></script>
-    
-    <!-- Mobile Glass Bottom Navigation -->
-    <div class="mobile-nav-glass" aria-hidden="false">
-      <button title="Dashboard" onclick="location.href='dashboard.html'">🏠</button>
-      <button title="Histórico" onclick="location.href='history.html'">🕑</button>
-      <button title="Planos" onclick="location.href='plans.html'">📦</button>
-      <button title="Perfil" onclick="location.href='profile.html'">👤</button>
-      <!-- Alterei o onclick aqui para o logout funcionar no mobile -->
-      <button title="Sair" id="mobileLogoutButton">🚪</button> <!-- Para Mobile -->
-    </div>
-
-    <!-- Incluindo o script logout.js -->
-    <script src="/js/logout.js"></script>
-
   </div>
 
+  <script src="js/dashboard.js"></script>
+  
+  <!-- Mobile Glass Bottom Navigation -->
+<div class="mobile-nav-glass" aria-hidden="false">
+  <button title="Dashboard" onclick="location.href='dashboard.html'">🏠</button>
+  <button title="Histórico" onclick="location.href='history.html'">🕑</button>
+  <button title="Planos" onclick="location.href='plans.html'">📦</button>
+  <button title="Perfil" onclick="location.href='profile.html'">👤</button>
+  <button title="Sair" onclick="location.href='/auth/logout'">🚪</button>
+</div>
+
 </body>
+</html>
