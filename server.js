@@ -589,7 +589,7 @@ const path = require("path");
 
 // === Existing routes (mantidas) ===
 app.get("/", (req,res)=> 
-  res.sendFile(path.join(__dirname,"public","index.html"))
+  res.sendFile(path.join(__dirname,"public","login.html"))
 );
 app.get("/analisar", async (req, res) => {
   const db = require("./db/dbmanager");
