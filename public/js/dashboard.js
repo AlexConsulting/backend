@@ -70,7 +70,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     tbody.innerHTML = '';
     history.forEach(h => {
       const tr = document.createElement('tr');
-      const date = new Date(h.timestamp).toLocaleString('pt-BR');
+      //const date = new Date(h.timestamp).toLocaleString('pt-BR');
+	  const ts = Number(h.timestamp);
+	  const date = isNaN(ts) ? 'Data inválida' : new Date(ts).toLocaleString('pt-BR');
+
 
       tr.innerHTML = `
         <td>${date}</td>
