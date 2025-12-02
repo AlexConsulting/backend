@@ -321,6 +321,23 @@
   /* Duração rápida (0.5s) para simular um scanner */
   transition: left 1.2s ease-in-out; 
 }
+
+/* MOBILE – ajustes para texto longo nos cards de IA e Resumo */
+@media (max-width: 768px) {
+  #aiAnalysis,
+  #securityAnalysis,
+  #iocsSummary {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    font-size: 15px !important;
+    line-height: 1.35;
+    max-height: 280px;       /* evita card gigante */
+    overflow-y: auto;        /* cria scroll interno */
+    padding-right: 6px;      /* evita texto colado na borda */
+  }
+}
+
   </style>
 
 <style>
