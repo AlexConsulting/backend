@@ -201,7 +201,7 @@ async function urlscanScan(urlToScan) {
     if (!submit.ok) return { error:true, reason:`urlscan submit ${submit.status}`, detail: await submit.text().catch(()=>"") };
     const submitJson = await submit.json();
     const uuid = submitJson.uuid;
-    for (let i=0;i<10;i++){
+    for (let i=0;i<25;i++){
       await new Promise(r=>setTimeout(r,1500));
       const r = await fetchTimeout(`https://urlscan.io/api/v1/result/${uuid}/`, { headers: { "API-Key": URLSCAN_KEY }},8000);
       if (r.ok) {
@@ -732,3 +732,4 @@ app.use(express.static(path.join(__dirname,"public")));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, ()=> console.log(`Server running on http://localhost:${PORT}`));
+
