@@ -322,48 +322,116 @@
   transition: left 1.2s ease-in-out; 
 }
 
-/* MOBILE – ajustes para cards de IA, Resumo e IOCs */
+/* =============================== */
+/*      MOBILE PREMIUM LAYOUT      */
+/* =============================== */
+
 @media (max-width: 768px) {
 
-  #aiAnalysis,
-  #securityAnalysis,
-  #iocsSummary {
-    white-space: normal !important;
-    word-break: break-word !important;
-    overflow-wrap: break-word !important;
+  /* ---- AJUSTE GERAL ---- */
+  .container {
+    padding: 10px !important;
+  }
 
+  header.topbar {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .brand h1 {
+    font-size: 18px !important;
+  }
+  .brand p {
+    font-size: 11px !important;
+  }
+
+  /* ---- GRID vira layout linear ---- */
+  .grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  /* ---- SCORE CARD adaptado ---- */
+  .score-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  .score-left {
+    width: 90px !important;
+    height: 90px !important;
+  }
+  #scoreChart {
+    width: 90px !important;
+    height: 90px !important;
+  }
+  .score-value {
+    font-size: 22px !important;
+  }
+
+  /* ---- BOTÕES MAIS USÁVEIS NO MOBILE ---- */
+  #btnAnalyze, .btn, .btn.secondary {
+    padding: 10px 14px;
     font-size: 15px !important;
-    line-height: 1.35;
-
-    max-height: 260px;         /* evita card gigante */
-    overflow-y: auto;          /* scroll interno suave */
-    padding-right: 8px;        /* espaço lateral */
-
-    scrollbar-width: thin;     /* Firefox */
-    scrollbar-color: #4da3ff #0f1724;
   }
 
-  /* Estética do scroll (Chrome, Edge, Safari) */
-  #aiAnalysis::-webkit-scrollbar,
-  #securityAnalysis::-webkit-scrollbar,
-  #iocsSummary::-webkit-scrollbar {
-    width: 6px;
+  /* ---- CARDS OTIMIZADOS ---- */
+  .card {
+    padding: 12px !important;
+  }
+  .card .title {
+    font-size: 14px !important;
+    font-weight: 600;
   }
 
-  #aiAnalysis::-webkit-scrollbar-thumb,
-  #securityAnalysis::-webkit-scrollbar-thumb,
-  #iocsSummary::-webkit-scrollbar-thumb {
-    background: rgba(0, 170, 255, 0.55);
-    border-radius: 4px;
+  /* ---- TRANSFORMA IA / RESUMO EM CARDS COLAPSÁVEIS ---- */
+  .collapsible-card {
+    max-height: 80px;
+    overflow: hidden;
+    position: relative;
+    transition: max-height 0.35s ease;
   }
 
-  /* BELT: Fade elegante no final do card */
-  #aiAnalysis,
-  #securityAnalysis,
-  #iocsSummary {
-    mask-image: linear-gradient(to bottom, 
-                    rgba(0,0,0,1) 85%, 
-                    rgba(0,0,0,0.15));
+  .collapsible-card.expanded {
+    max-height: 600px;
+  }
+
+  /* fade bonito */
+  .collapsible-card::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 40px;
+    background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.4));
+    pointer-events: none;
+  }
+
+  .collapsible-card.expanded::after {
+    display: none;
+  }
+
+  .expand-btn {
+    margin-top: 8px;
+    background: rgba(255,255,255,0.05);
+    width: 100%;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 6px;
+    color: #4da3ff;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  /* ---- AJUSTE DO RAW ---- */
+  #evidence pre {
+    max-height: 200px !important;
+  }
+
+  /* ---- MENOR ESPAÇAMENTO NO RODAPÉ ---- */
+  footer {
+    margin-bottom: 80px;
   }
 }
 
