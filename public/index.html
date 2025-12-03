@@ -136,6 +136,137 @@
   #evidence pre { max-height: 200px; }
 }
 
+/* =============================== */
+/*      GLOBAL – COLAPSÁVEIS      */
+/* =============================== */
+
+.collapsible-card {
+  max-height: 140px;
+  overflow: hidden;
+  position: relative;
+  transition: max-height 0.35s ease;
+}
+
+/* Quando expandido no DESKTOP e MOBILE */
+.collapsible-card.expanded {
+  max-height: 900px;
+}
+
+/* Fade elegante */
+.collapsible-card::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 35px;
+  background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.45));
+  pointer-events: none;
+}
+.collapsible-card.expanded::after {
+  display: none;
+}
+
+
+/* =============================== */
+/*      MOBILE PREMIUM LAYOUT      */
+/* =============================== */
+
+@media (max-width: 768px) {
+
+  /* ---- AJUSTE GERAL ---- */
+  .container {
+    padding: 10px !important;
+  }
+
+  header.topbar {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .brand h1 {
+    font-size: 18px !important;
+  }
+  .brand p {
+    font-size: 11px !important;
+  }
+
+  /* ---- GRID vira layout linear ---- */
+  .grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  /* ---- SCORE CARD adaptado ---- */
+  .score-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  .score-left {
+    width: 90px !important;
+    height: 90px !important;
+  }
+  #scoreChart {
+    width: 90px !important;
+    height: 90px !important;
+  }
+  .score-value {
+    font-size: 22px !important;
+  }
+
+  /* ---- BOTÕES MAIS USÁVEIS NO MOBILE ---- */
+  #btnAnalyze, .btn, .btn.secondary {
+    padding: 10px 14px;
+    font-size: 15px !important;
+  }
+
+  /* ---- CARDS OTIMIZADOS ---- */
+  .card {
+    padding: 12px !important;
+  }
+  .card .title {
+    font-size: 14px !important;
+    font-weight: 600;
+  }
+
+  /* ---- transições de colapsáveis no mobile ---- */
+  .collapsible-card {
+    max-height: 80px !important;
+  }
+  .collapsible-card.expanded {
+    max-height: 600px !important;
+  }
+
+  /* fade bonito (mobile) */
+  .collapsible-card::after {
+    height: 40px !important;
+  }
+
+  .expand-btn {
+    margin-top: 8px;
+    background: rgba(255,255,255,0.05);
+    width: 100%;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 6px;
+    color: #4da3ff;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  /* ---- AJUSTE DO RAW ---- */
+  #evidence pre {
+    max-height: 200px !important;
+  }
+
+  /* ---- MENOR ESPAÇAMENTO NO RODAPÉ ---- */
+  footer {
+    margin-bottom: 80px;
+  }
+}
+
+
 /* ===== MOBILE GLASS NAVIGATION ===== */
 .mobile-nav-glass {
   display: none;
@@ -322,119 +453,6 @@
   transition: left 1.2s ease-in-out; 
 }
 
-/* =============================== */
-/*      MOBILE PREMIUM LAYOUT      */
-/* =============================== */
-
-@media (max-width: 768px) {
-
-  /* ---- AJUSTE GERAL ---- */
-  .container {
-    padding: 10px !important;
-  }
-
-  header.topbar {
-    flex-direction: column;
-    gap: 6px;
-    text-align: center;
-  }
-
-  .brand h1 {
-    font-size: 18px !important;
-  }
-  .brand p {
-    font-size: 11px !important;
-  }
-
-  /* ---- GRID vira layout linear ---- */
-  .grid {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 14px !important;
-  }
-
-  /* ---- SCORE CARD adaptado ---- */
-  .score-card {
-    flex-direction: column;
-    text-align: center;
-  }
-  .score-left {
-    width: 90px !important;
-    height: 90px !important;
-  }
-  #scoreChart {
-    width: 90px !important;
-    height: 90px !important;
-  }
-  .score-value {
-    font-size: 22px !important;
-  }
-
-  /* ---- BOTÕES MAIS USÁVEIS NO MOBILE ---- */
-  #btnAnalyze, .btn, .btn.secondary {
-    padding: 10px 14px;
-    font-size: 15px !important;
-  }
-
-  /* ---- CARDS OTIMIZADOS ---- */
-  .card {
-    padding: 12px !important;
-  }
-  .card .title {
-    font-size: 14px !important;
-    font-weight: 600;
-  }
-
-  /* ---- TRANSFORMA IA / RESUMO EM CARDS COLAPSÁVEIS ---- */
-  .collapsible-card {
-    max-height: 80px;
-    overflow: hidden;
-    position: relative;
-    transition: max-height 0.35s ease;
-  }
-
-  .collapsible-card.expanded {
-    max-height: 600px;
-  }
-
-  /* fade bonito */
-  .collapsible-card::after {
-    content: "";
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    height: 40px;
-    background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.4));
-    pointer-events: none;
-  }
-
-  .collapsible-card.expanded::after {
-    display: none;
-  }
-
-  .expand-btn {
-    margin-top: 8px;
-    background: rgba(255,255,255,0.05);
-    width: 100%;
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
-    padding: 6px;
-    color: #4da3ff;
-    font-size: 14px;
-    cursor: pointer;
-    text-align: center;
-  }
-
-  /* ---- AJUSTE DO RAW ---- */
-  #evidence pre {
-    max-height: 200px !important;
-  }
-
-  /* ---- MENOR ESPAÇAMENTO NO RODAPÉ ---- */
-  footer {
-    margin-bottom: 80px;
-  }
-}
-
   </style>
 
 <style>
@@ -567,9 +585,10 @@
   </div>
 
   <!-- BOTÃO EXPANDIR/MOSTRAR MAIS -->
-  <button class="expand-btn" onclick="toggleExpand('aiAnalysis')">
-    Mostrar mais
-  </button>
+<button class="expand-btn" onclick="toggleExpand('aiAnalysis', this)">
+  Mostrar mais
+</button>
+
 </div>
 
 
@@ -582,9 +601,10 @@
   </div>
 
   <!-- BOTÃO EXPANDIR/MOSTRAR MAIS -->
-  <button class="expand-btn" onclick="toggleExpand('securityAnalysis')">
-    Mostrar mais
-  </button>
+  <button class="expand-btn" onclick="toggleExpand('aiAnalysis', this)">
+  Mostrar mais
+</button>
+
 </div>
 
 
@@ -840,6 +860,23 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+</script>
+
+<script>
+function toggleExpand(id, btn) {
+  const el = document.getElementById(id);
+
+  if (!el) return;
+
+  el.classList.toggle("expanded");
+
+  if (el.classList.contains("expanded")) {
+    btn.textContent = "Mostrar menos";
+  } else {
+    btn.textContent = "Mostrar mais";
+    el.scrollTop = 0;
+  }
+}
 </script>
 
 <!-- 🔵 MOBILE GLASS NAVIGATION -->
