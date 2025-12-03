@@ -559,14 +559,34 @@
         </div>
 
         <div class="card">
-          <div class="title">Retorno IA (Gemini) 🤖</div>
-          <div id="aiAnalysis" style="min-height:64px;">Aguardando análise...</div>
-        </div>
+  <div class="title">Retorno IA (Gemini) 🤖</div>
 
-        <div class="card">
-          <div class="title">Resumo de Segurança (rápido)</div>
-          <div id="securityAnalysis">—</div>
-        </div>
+  <!-- CARD COLAPSÁVEL -->
+  <div id="aiAnalysis" class="collapsible-card" style="min-height:64px;">
+    Aguardando análise...
+  </div>
+
+  <!-- BOTÃO EXPANDIR/MOSTRAR MAIS -->
+  <button class="expand-btn" onclick="toggleExpand('aiAnalysis')">
+    Mostrar mais
+  </button>
+</div>
+
+
+      <div class="card">
+  <div class="title">Resumo de Segurança (rápido)</div>
+
+  <!-- CARD COLAPSÁVEL -->
+  <div id="securityAnalysis" class="collapsible-card">
+    —
+  </div>
+
+  <!-- BOTÃO EXPANDIR/MOSTRAR MAIS -->
+  <button class="expand-btn" onclick="toggleExpand('securityAnalysis')">
+    Mostrar mais
+  </button>
+</div>
+
 
         <div class="card">
           <div class="title">IOCs extraídos</div>
