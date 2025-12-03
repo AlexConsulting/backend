@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       tr.innerHTML = `
         <td>${date}</td>
         <td>${h.query}</td>
-        <td>${h.type}</td>
+        
         <td><button data-id="${h.id}" class="btnDetails">Detalhes</button></td>
       `;
       tbody.appendChild(tr);
